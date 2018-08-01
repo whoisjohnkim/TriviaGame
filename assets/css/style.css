@@ -1,0 +1,20 @@
+body {
+    text-align: center;
+}
+
+
+.container {
+    display: block;
+    margin: 100px auto;
+}
+
+#startButton {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    border: 2px solid black;
+}
+
+.answer {
+    border: 2px solid black;
+}
