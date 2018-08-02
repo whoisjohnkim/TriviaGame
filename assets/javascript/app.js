@@ -88,7 +88,7 @@ var questionArray = [
 function newQuestion(){
     questionBody.empty();
     // Add Question Div
-    var questionDiv = $("<div>").text(questionArray[questionCounter].question);
+    var questionDiv = $("<div>").html("<h2>" + questionArray[questionCounter].question + "</h2>");
     questionBody.append(questionDiv)
 
     // Add Answer Divs
@@ -98,40 +98,50 @@ function newQuestion(){
         tempDiv.attr("id", "answer" + i)
         // If it is the correct answer, attach class correct
         if(i === questionArray[questionCounter].answer){
-            console.log("I'm in here in place " + i)
             tempDiv.addClass("correct");
         }
         questionBody.append(tempDiv);
     }
+    addClick();
 }
 
+// Function to handle if correct answer is clicked
+function correctAnswer(){
+    questionBody.empty();
+    questionBody.append("<h3>Correct!</h3>");
+    questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
+    questionBody.append("<img class='giph' src='" + questionArray[questionCounter].gifURL + "'>");
+}
+
+// Function to handle if wrong answer is clicked
+function wrongAnswer(){
+    questionBody.empty();
+    questionBody.append("<h3>Sorry, that's not the right answer!</h3>");
+    questionBody.append("<h3>The correct answer was " + questionArray[questionCounter].options[questionArray[questionCounter].answer] + "</h3>")
+    questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
+    questionBody.append("<img class='giph' src='" + questionArray[questionCounter].gifURL + "'>");
+}
+
+
+// Add click events onto each potential answer
 function addClick(){
-    var answers = ["#answer0", "#answer1", "#answer2", "#answer3"]
-    for(var i = 0; i < 4; i++){
+    for(var i = 0; i < questionArray.length;i++){
         $("#answer" + i).click(function(){
-            alert($(answers[i]).hasClass("correct"));
-            if($(answers[i]).hasClass("correct")){
-                alert("Answer correct!");
-                questionBody.empty();
-                questionBody.append("<h3>Correct!</h3>");
-                questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
-                questionBody.append("<img src='" + questionArray[questionCounter].gifURL + "'>");
+            if($(this).hasClass("correct")){
+                correctAnswer();
             }
             else{
-                questionBody.empty();
-                questionBody.append("<h3>Sorry, that's not the right answer!</h3>");
-                questionBody.append("<h3>The correct answer was " + questionArray[questionCounter].options[questionArray[questionCounter].answer] + "</h3>")
-                questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
-                questionBody.append("<img src='" + questionArray[questionCounter].gifURL + "'>");
+                wrongAnswer();
             }
             questionCounter++;
-            // setTimeout(newQuestion(), 5000);
+            setTimeout(function(){ newQuestion();}, 4000);
         })
     }
 }
 
+
+
 $("#startButton").click(function(){
     questionBody.empty();
     newQuestion();
-    addClick();
 })
