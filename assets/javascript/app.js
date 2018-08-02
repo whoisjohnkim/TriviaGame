@@ -1,5 +1,10 @@
 var questionBody = $("#questionBody");
 var questionCounter = 0;
+var correctCounter = 0;
+var wrongCounter = 0;
+var incompleteCounter = 0;
+var intervalId;
+var number = 20;
 
 // Array containing the objects which will contain each question to display along with the correct answer
 var questionArray = [
@@ -25,7 +30,7 @@ var questionArray = [
     },
     // Question 3
     {
-        "question": "Out of the following teams, which has won an NBA championship?",
+        "question": "Out of the following teams, which has won a NBA championship?",
         "options": [
                         "Charlotte Hornets", "Denver Nuggest", "Toronto Raptors", "Detroit Pistons"
                     ],
@@ -85,9 +90,79 @@ var questionArray = [
     }
 ]
 
+function stop(){
+    clearInterval(intervalId);
+}
+
+function decrement(){
+    number--;
+    $("#timeRemaining").text(number);
+    if(number === 0){
+        incompleteCounter++;
+        stop();
+        wrongAnswer();
+    }
+}
+
+function startTimer(){
+    number = 20;
+    clearInterval(intervalId);
+    intervalId = setInterval(decrement, 1000);
+}
+
+function finalPage(){
+    questionBody.empty();
+    // Make final giph in img tag
+    var finalGiph = $("<img>");
+    finalGiph.addClass("giph");
+
+    // Make final message in h3 tag
+    var finalMessage = $("<h3>");
+
+    // Make final statistics to show user in h4 tags
+    var finalCorrect = $("<h4>");
+    finalCorrect.text("Correct Answers: " + correctCounter);
+    var finalWrong = $("<h4>");
+    finalWrong.text("Wrong Answers: " + wrongCounter);
+    var finalUnanswered = $("<h4>");
+    finalUnanswered.text("Unanswered: " + incompleteCounter);
+
+    // Depending on correct answers, change final message and final giph shown
+    if(correctCounter >= 6){
+        finalGiph.attr("src", "https://media.giphy.com/media/Mj4r3w2crzOeY/giphy.gif");
+        finalMessage.text("Good job! You know your stuff. Here's how you did!");
+    }
+    else{
+        finalGiph.attr("src", "https://media1.tenor.com/images/c02da745cbc6388c5d512708828a638b/tenor.gif?itemid=7910092");
+        finalMessage.text("...Maybe you should study up a little bit more on your NBA knowledge. Here's how you did.");
+    }
+
+    // Add a start again button
+    var startAgainButton = $("<h1>");
+    startAgainButton.attr("id", "startAgainButton");
+    startAgainButton.text("Try Again!");
+    startAgainButton.click(function(){
+        questionCounter = 0;
+        correctCounter = 0;
+        wrongCounter = 0;
+        incompleteCounter = 0;
+        newQuestion();
+    })
+
+    questionBody.append(finalMessage);
+    questionBody.append(finalCorrect);
+    questionBody.append(finalWrong);
+    questionBody.append(finalUnanswered);
+    questionBody.append(finalGiph);
+    questionBody.append(startAgainButton);
+}
+
+
 function newQuestion(){
     questionBody.empty();
     // Add Question Div
+    var timeDiv = $("<div><h2>Time Remaining: <span id='timeRemaining'>20</span> seconds</h2></div>")
+    questionBody.append(timeDiv);
     var questionDiv = $("<div>").html("<h2>" + questionArray[questionCounter].question + "</h2>");
     questionBody.append(questionDiv)
 
@@ -95,6 +170,7 @@ function newQuestion(){
     for(var i = 0; i < 4; i++){
         var tempDiv = $("<div>").text(questionArray[questionCounter].options[i])
         tempDiv.addClass("answer");
+        tempDiv.addClass("clickable");
         tempDiv.attr("id", "answer" + i)
         // If it is the correct answer, attach class correct
         if(i === questionArray[questionCounter].answer){
@@ -103,6 +179,7 @@ function newQuestion(){
         questionBody.append(tempDiv);
     }
     addClick();
+    startTimer();
 }
 
 // Function to handle if correct answer is clicked
@@ -111,6 +188,14 @@ function correctAnswer(){
     questionBody.append("<h3>Correct!</h3>");
     questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
     questionBody.append("<img class='giph' src='" + questionArray[questionCounter].gifURL + "'>");
+    correctCounter++;
+    if(questionCounter === questionArray.length - 1){
+        stop();
+        setTimeout(function(){finalPage();}, 4500);
+    }
+    else{
+        setTimeout(function(){ newQuestion();}, 4000);
+    }
 }
 
 // Function to handle if wrong answer is clicked
@@ -120,6 +205,15 @@ function wrongAnswer(){
     questionBody.append("<h3>The correct answer was " + questionArray[questionCounter].options[questionArray[questionCounter].answer] + "</h3>")
     questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
     questionBody.append("<img class='giph' src='" + questionArray[questionCounter].gifURL + "'>");
+    setTimeout(function(){ newQuestion();}, 4000);
+    wrongCounter++;
+    if(questionCounter === questionArray.length - 1){
+        stop();
+        setTimeout(function(){finalPage();}, 4500);
+    }
+    else{
+        setTimeout(function(){ newQuestion();}, 4000);
+    }
 }
 
 
@@ -134,7 +228,6 @@ function addClick(){
                 wrongAnswer();
             }
             questionCounter++;
-            setTimeout(function(){ newQuestion();}, 4000);
         })
     }
 }
