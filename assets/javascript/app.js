@@ -189,7 +189,8 @@ function correctAnswer(){
     questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
     questionBody.append("<img class='giph' src='" + questionArray[questionCounter].gifURL + "'>");
     correctCounter++;
-    if(questionCounter === questionArray.length - 1){
+    questionCounter++;
+    if(questionCounter === questionArray.length){
         stop();
         setTimeout(function(){finalPage();}, 4500);
     }
@@ -205,9 +206,10 @@ function wrongAnswer(){
     questionBody.append("<h3>The correct answer was " + questionArray[questionCounter].options[questionArray[questionCounter].answer] + "</h3>")
     questionBody.append("<h3>" + questionArray[questionCounter].correct + "</h3>");
     questionBody.append("<img class='giph' src='" + questionArray[questionCounter].gifURL + "'>");
+    questionCounter++;
     setTimeout(function(){ newQuestion();}, 4000);
     wrongCounter++;
-    if(questionCounter === questionArray.length - 1){
+    if(questionCounter === questionArray.length){
         stop();
         setTimeout(function(){finalPage();}, 4500);
     }
@@ -227,7 +229,7 @@ function addClick(){
             else{
                 wrongAnswer();
             }
-            questionCounter++;
+
         })
     }
 }
